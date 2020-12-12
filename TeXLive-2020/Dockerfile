@@ -2,7 +2,8 @@ FROM debian:testing
 
 ENV LANG=C.UTF-8 \
     LC_ALL=C.UTF-8 \
-    PANDOC=2.11
+    PANDOC=2.11.2
+    TEXLIVE=tex-2020
     
 ENV PATH=/usr/local/texlive/2020/bin/x86_64-linux:$PATH
 ARG scheme=scheme-full
@@ -16,14 +17,14 @@ RUN apt-get update \
   
 WORKDIR /
 RUN curl -sL http://ctan.math.washington.edu/tex-archive/systems/texlive/tlnet/install-tl-unx.tar.gz | tar zxf - \
-  && mv install-tl-20* install-tl \
-  && cd install-tl \
+  && mv install-tl-20* install-tl-${TEXLIVE} \
+  && cd install-tl-${TEXLIVE} \
   && echo "selected_scheme ${scheme}" > profile \
   && echo "tlpdbopt_install_docfiles 0" >> profile \
   && echo "tlpdbopt_install_srcfiles 0" >> profile \
   && ./install-tl -repository http://ctan.math.washington.edu/tex-archive/systems/texlive/tlnet/ -profile profile \
   && cd .. \
-  && rm -rf install-tl \
+  && rm -rf install-tl-${TEXLIVE} \
   && wget https://github.com/jgm/pandoc/releases/download/${PANDOC}/pandoc-${PANDOC}-1-amd64.deb \
   && dpkg -i pandoc-${PANDOC}-1-amd64.deb && rm pandoc-${PANDOC}-1-amd64.deb
   
